@@ -1,0 +1,303 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VueXG - Computer Vision for Product Detection and Auto-Pricing</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"></link>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap');
+        body {
+            font-family: 'Open Sans', sans-serif;
+        }
+        .camera-view {
+            height: auto; /* Set a fixed height for portrait view */
+            width: 100%; /* Allow flexible width */
+            position: relative; /* Add position relative */
+            display: flex; /* Use flexbox for centering */
+            align-items: center; /* Center vertically */
+            justify-content: center; /* Center horizontally */
+        }
+        .scrollable-table {
+            max-height: 300px; /* Set a max-height for the table to make it scrollable */
+            overflow-y: auto;
+        }
+        .camera-stream {
+            width: 100%;
+            max-height: 100%; /* Ensure the video maintains its aspect ratio */
+        }
+        .camera-view video {
+            transform: scaleX(-1); /* Flip the video horizontally */
+        }
+        
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="flex justify-between items-start p-8">
+        <!-- Left side - Camera view and title -->
+        <div class="w-1/2 bg-white border-r border-gray-300 p-8">
+            <h1 class="text-2xl font-semibold mb-8">VueXG - Computer Vision for Product Detection and Auto-Pricing</h1>
+            <div class="camera-view border border-dashed border-gray-300 rounded-lg">
+                <video id="cameraStream" class="camera-stream" autoplay></video>
+            </div>
+        </div>
+
+        <!-- Right side - Items and Payment -->
+        <div class="w-1/2 p-8">
+            <!-- Scanned Items -->
+            <div class="mb-8">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold">Scanned Items</h2>
+                    <button class="bg-red-500 text-white px-8 py-2 rounded-full uppercase font-semibold">Checkout</button>
+                </div>
+                <div class="scrollable-table">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="text-left font-semibold">
+                                <th class="pb-4">Product</th>
+                                <th class="pb-4">Price</th>
+                                <th class="pb-4">Quantity</th>
+                                <th class="pb-4">Total</th>
+                                <th class="pb-4">Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tbody class="[&amp;_tr:last-child]:border-0">
+                                <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+                                  <td class="p-4 align-middle [&amp;:has([role=checkbox])]:pr-0 font-medium">Glimmer Lamps</td>
+                                  <td class="p-4 align-middle [&amp;:has([role=checkbox])]:pr-0">$50.00</td>
+                                  <td class="p-4 align-middle [&amp;:has([role=checkbox])]:pr-0">2</td>
+                                  <td class="p-4 align-middle [&amp;:has([role=checkbox])]:pr-0">$100.00</td>
+                                  <td class="p-4 align-middle [&amp;:has([role=checkbox])]:pr-0">
+                                    <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-destructive text-destructive-foreground hover:bg-destructive/90 h-10 w-10">
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="24"
+                                        height="24"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        class="h-4 w-4"
+                                      >
+                                        <path d="M3 6h18"></path>
+                                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                                      </svg>
+                                      <span class="sr-only">Delete</span>
+                                    </button>
+                                  </td>
+                                </tr>
+                                <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+                                  <td class="p-4 align-middle [&amp;:has([role=checkbox])]:pr-0 font-medium">Aqua Filters</td>
+                                  <td class="p-4 align-middle [&amp;:has([role=checkbox])]:pr-0">$25.00</td>
+                                  <td class="p-4 align-middle [&amp;:has([role=checkbox])]:pr-0">3</td>
+                                  <td class="p-4 align-middle [&amp;:has([role=checkbox])]:pr-0">$75.00</td>
+                                  <td class="p-4 align-middle [&amp;:has([role=checkbox])]:pr-0">
+                                    <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-destructive text-destructive-foreground hover:bg-destructive/90 h-10 w-10">
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="24"
+                                        height="24"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        class="h-4 w-4"
+                                      >
+                                        <path d="M3 6h18"></path>
+                                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                                      </svg>
+                                      <span class="sr-only">Delete</span>
+                                    </button>
+                                  </td>
+                                </tr>
+                                <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+                                  <td class="p-4 align-middle [&amp;:has([role=checkbox])]:pr-0 font-medium">Eco Planters</td>
+                                  <td class="p-4 align-middle [&amp;:has([role=checkbox])]:pr-0">$30.00</td>
+                                  <td class="p-4 align-middle [&amp;:has([role=checkbox])]:pr-0">1</td>
+                                  <td class="p-4 align-middle [&amp;:has([role=checkbox])]:pr-0">$30.00</td>
+                                  <td class="p-4 align-middle [&amp;:has([role=checkbox])]:pr-0">
+                                    <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-destructive text-destructive-foreground hover:bg-destructive/90 h-10 w-10">
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="24"
+                                        height="24"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        class="h-4 w-4"
+                                      >
+                                        <path d="M3 6h18"></path>
+                                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                                      </svg>
+                                      <span class="sr-only">Delete</span>
+                                    </button>
+                                  </td>
+                                </tr>
+                                <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+                                  <td class="p-4 align-middle [&amp;:has([role=checkbox])]:pr-0 font-medium">Zest Juicers</td>
+                                  <td class="p-4 align-middle [&amp;:has([role=checkbox])]:pr-0">$40.00</td>
+                                  <td class="p-4 align-middle [&amp;:has([role=checkbox])]:pr-0">2</td>
+                                  <td class="p-4 align-middle [&amp;:has([role=checkbox])]:pr-0">$80.00</td>
+                                  <td class="p-4 align-middle [&amp;:has([role=checkbox])]:pr-0">
+                                    <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-destructive text-destructive-foreground hover:bg-destructive/90 h-10 w-10">
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="24"
+                                        height="24"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        class="h-4 w-4"
+                                      >
+                                        <path d="M3 6h18"></path>
+                                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                                      </svg>
+                                      <span class="sr-only">Delete</span>
+                                    </button>
+                                  </td>
+                                </tr>
+                                <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+                                  <td class="p-4 align-middle [&amp;:has([role=checkbox])]:pr-0 font-medium">Flexi Wearables</td>
+                                  <td class="p-4 align-middle [&amp;:has([role=checkbox])]:pr-0">$35.00</td>
+                                  <td class="p-4 align-middle [&amp;:has([role=checkbox])]:pr-0">1</td>
+                                  <td class="p-4 align-middle [&amp;:has([role=checkbox])]:pr-0">$35.00</td>
+                                  <td class="p-4 align-middle [&amp;:has([role=checkbox])]:pr-0">
+                                    <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-destructive text-destructive-foreground hover:bg-destructive/90 h-10 w-10">
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="24"
+                                        height="24"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        class="h-4 w-4"
+                                      >
+                                        <path d="M3 6h18"></path>
+                                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                                      </svg>
+                                      <span class="sr-only">Delete</span>
+                                    </button>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                        <div dir="ltr" data-orientation="horizontal">
+                          <div
+                            role="tablist"
+                            aria-orientation="horizontal"
+                            class="h-9 items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground grid w-full grid-cols-2"
+                            tabindex="-1"
+                            data-orientation="horizontal"
+                            style="outline:none"
+                          >
+                            <button
+                              type="button"
+                              role="tab"
+                              aria-selected="true"
+                              aria-controls="radix-:R1ralafnnja:-content-payment"
+                              data-state="active"
+                              id="radix-:R1ralafnnja:-trigger-payment"
+                              class="inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow"
+                              tabindex="-1"
+                              data-orientation="horizontal"
+                              data-radix-collection-item=""
+                            >
+                              Payment
+                            </button>
+                            
+                          </div>
+                          <div
+                            data-state="active"
+                            data-orientation="horizontal"
+                            role="tabpanel"
+                            aria-labelledby="radix-:R1ralafnnja:-trigger-payment"
+                            id="radix-:R1ralafnnja:-content-payment"
+                            tabindex="0"
+                            class="mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                            style="animation-duration:0s"
+                          >
+                            <div class="rounded-lg border bg-card text-card-foreground shadow-sm" data-v0-t="card">
+                              <div class="flex flex-col space-y-1.5 p-6">
+                                <h3 class="whitespace-nowrap text-2xl font-semibold leading-none tracking-tight">Payment</h3>
+                                <p class="text-sm text-muted-foreground">Review your order and complete the payment.</p>
+                              </div>
+                              <div class="p-6 grid gap-4">
+                                <div class="flex items-center">
+                                  <div>Subtotal</div>
+                                  <div class="ml-auto">$205.00</div>
+                                </div>
+                                <div class="flex items-center">
+                                  <div>Discount</div>
+                                  <div class="ml-auto">-$10.00</div>
+                                </div>
+                                <div class="flex items-center">
+                                  <div>VAT (5%)</div>
+                                  <div class="ml-auto">$9.75</div>
+                                </div>
+                                <div data-orientation="horizontal" role="none" class="shrink-0 bg-gray-100 h-[1px] w-full"></div>
+                                <div class="flex items-center font-medium">
+                                  <div>Total</div>
+                                  <div class="ml-auto">$204.75</div>
+                                </div>
+                              </div>
+                              <div class="p-6 flex items-center gap-2">
+                                <button class="bg-blue-600 text-white text-lg font-semibold py-3 px-8 rounded-lg w-full transition-colors duration-150 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50">
+                                    Pay Now
+                                </button>
+                                
+                                
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            data-state="inactive"
+                            data-orientation="horizontal"
+                            role="tabpanel"
+                            aria-labelledby="radix-:R1ralafnnja:-trigger-history"
+                            hidden=""
+                            id="radix-:R1ralafnnja:-content-history"
+                            tabindex="0"
+                            class="mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                    <script>
+                        // Function to access the camera
+                        async function startCamera() {
+                            try {
+                                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                                const videoElement = document.getElementById('cameraStream');
+                                videoElement.srcObject = stream;
+                            } catch (error) {
+                                console.error('Error accessing the camera:', error);
+                            }
+                        }
+                
+                        // Call the function to start accessing the camera
+                        startCamera();
+                    </script>
+                  </main>
+                </div>
+              </div>
